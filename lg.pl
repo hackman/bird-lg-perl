@@ -8,8 +8,6 @@ my $VERSION = '0.1';
 our $proto_validation = '^[a-zA-Z0-9-._]+$';
 our $bird_client = '/usr/sbin/birdc';
 
-print "Content-type: text/html\r\n\r\n";
-print "<html>\n<title>Bird Looking Glass</title>\n<style>\nbackground-color: #000;\mtext: #fff;\n</style>\n<body>\n";
 
 
 sub exec_cmd {
@@ -20,6 +18,15 @@ sub exec_cmd {
 		print "$line<br />\n";
 	}
 	close $bird;
+}
+
+sub print_tmpl {
+	my $template = shift;
+	open my $f, '<', 'templates/' . $template . '.tmpl';
+	while (my $line = <$f>) {
+		print $line;
+	}
+	close $f;
 }
 
 sub routes {
@@ -175,6 +182,9 @@ sub show_route {
 	}
 }
 
+print "Content-type: text/html\r\n\r\n";
+print_tmpl('header');
+
 my $action = '';
 if (defined(param('a'))) {
 	$action = param('a');
@@ -188,3 +198,4 @@ if ($action eq 'route') {
 	bgp_summary();
 }
 
+print_tmpl('footer');
